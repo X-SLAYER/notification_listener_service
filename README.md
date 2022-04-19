@@ -1,18 +1,85 @@
 # notification_listener_service
 
-A new flutter plugin project.
+a plugin for interacting with Notification Service in Android.
 
-## Getting Started
+NotificationListenerService is a service that receives calls from the system when new notifications are posted or removed,
 
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/developing-packages/),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
+for more info check [NotificationListenerService](https://developer.android.com/reference/android/service/notification/NotificationListenerService)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Installation and usage
 
-The plugin project was generated without specifying the `--platforms` flag, no platforms are currently supported.
-To add platforms, run `flutter create -t plugin --platforms <platforms> .` under the same
-directory. You can also find a detailed instruction on how to add platforms in the `pubspec.yaml` at https://flutter.dev/docs/development/packages-and-plugins/developing-packages#plugin-platforms.
+Add package to your pubspec:
+
+```yaml
+dependencies:
+  notification_listener_service: any # or the latest version on Pub
+```
+
+Inside AndroidManifest add this to bind notification service with your application
+
+```
+    ...
+    <service android:label="notifications" android:name="notification.listener.service.NotificationListener" android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+        <intent-filter>
+            <action android:name="android.service.notification.NotificationListenerService" />
+        </intent-filter>
+    </service>
+    ...
+</application>
+
+```
+
+### USAGE
+
+```dart
+ /// check if accessibility permession is enebaled
+ final bool status = await NotificationListenerService.isPermissionGranted();
+
+ /// request accessibility permission
+ /// it will open the accessibility settings page and return `true` once the permission granted.
+ final bool status = await NotificationListenerService.requestPermission();
+
+ /// stream the incoming Accessibility events
+  NotificationListenerService.notificationsStream.listen((event) {
+    log("Current notification: $event");
+  });
+```
+
+The `ServiceNotificationEvent` provides:
+
+```dart
+  /// if the notification has an extras image
+  bool? hasExtrasPicture;
+
+  /// if the notification has been removed
+  bool? hasRemoved;
+
+  /// notification extras image
+  /// To display an image simply use the [Image.memory] widget.
+  /// Example:
+  ///
+  /// ```
+  /// Image.memory(notif.extrasPicture)
+  /// ```
+  Uint8List? extrasPicture;
+
+  /// notification package name
+  String? packageName;
+
+  /// notification title
+  String? title;
+
+  /// the notification app icon
+  /// To display an image simply use the [Image.memory] widget.
+  /// Example:
+  ///
+  /// ```
+  /// Image.memory(notif.notificationIcon)
+  /// ```
+  Uint8List? notificationIcon;
+
+  /// the content of the notification
+  String? content;
+```
+
+for each event.
