@@ -7,15 +7,17 @@ import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
+
+import java.io.ByteArrayOutputStream;
 
 
 @SuppressLint("OverrideAbstract")
@@ -38,45 +40,46 @@ public class NotificationListener extends NotificationListenerService {
     private void handleNotification(StatusBarNotification notification, boolean isRemoved) {
         String packageName = notification.getPackageName();
         Bundle extras = notification.getNotification().extras;
-        int iconId = extras.getInt(Notification.EXTRA_SMALL_ICON);
-        Drawable drawable = getSmallIcon(iconId, packageName);
-        Bitmap smallIcon = getBitmapFromDrawable(drawable);
+        byte[] drawable = getSmallIcon(packageName);
 
         Intent intent = new Intent(NotificationConstants.INTENT);
         intent.putExtra(NotificationConstants.PACKAGE_NAME, packageName);
 
-        if (smallIcon != null) {
-            intent.putExtra(NotificationConstants.NOTIFICATION_TITLE, encodeToBase64(getBitmapFromDrawable(drawable), Bitmap.CompressFormat.PNG, 100));
-        }
+        intent.putExtra(NotificationConstants.NOTIFICATIONS_ICON, drawable);
 
         if (extras != null) {
             CharSequence title = extras.getCharSequence(Notification.EXTRA_TITLE);
             CharSequence text = extras.getCharSequence(Notification.EXTRA_TEXT);
 
-            intent.putExtra(NotificationConstants.NOTIFICATION_TITLE, title.toString());
-            intent.putExtra(NotificationConstants.NOTIFICATION_CONTENT, text.toString());
+            intent.putExtra(NotificationConstants.NOTIFICATION_TITLE, title == null ? null : title.toString());
+            intent.putExtra(NotificationConstants.NOTIFICATION_CONTENT, text == null ? null : text.toString());
             intent.putExtra(NotificationConstants.IS_REMOVED, isRemoved);
 
             if (extras.containsKey(Notification.EXTRA_PICTURE)) {
                 Bitmap bmp = (Bitmap) extras.get(Notification.EXTRA_PICTURE);
                 intent.putExtra(NotificationConstants.HAS_EXTRAS_PICTURE, true);
-                intent.putExtra(NotificationConstants.EXTRAS_PICTURE, encodeToBase64(bmp, Bitmap.CompressFormat.PNG, 100));
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                intent.putExtra(NotificationConstants.EXTRAS_PICTURE, stream.toByteArray());
+            } else {
+                intent.putExtra(NotificationConstants.HAS_EXTRAS_PICTURE, false);
             }
         }
         sendBroadcast(intent);
     }
 
 
-    public Drawable getSmallIcon(int iconId, String packageName) {
+    public byte[] getSmallIcon(String packageName) {
         try {
-            PackageManager manager = getPackageManager();
-            Resources resources = manager.getResourcesForApplication(packageName);
-            Drawable icon = resources.getDrawable(iconId);
-            return icon;
+            PackageManager manager = getBaseContext().getPackageManager();
+            Drawable icon = manager.getApplicationIcon(packageName);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            getBitmapFromDrawable(icon).compress(Bitmap.CompressFormat.PNG, 100, stream);
+            return stream.toByteArray();
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
 }

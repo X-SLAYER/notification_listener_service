@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:notification_listener_service/notification_event.dart';
 import 'package:notification_listener_service/notification_listener_service.dart';
 
 void main() {
@@ -16,8 +17,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  StreamSubscription<dynamic>? _subscription;
-  List<dynamic> events = [];
+  StreamSubscription<ServiceNotificationEvent>? _subscription;
+  List<ServiceNotificationEvent> events = [];
 
   @override
   void initState() {
@@ -41,7 +42,9 @@ class _MyAppState extends State<MyApp> {
                   children: [
                     TextButton(
                       onPressed: () async {
-                        await NotificationListenerService.requestPermission();
+                        final res = await NotificationListenerService
+                            .requestPermission();
+                        log("Is enabled: $res");
                       },
                       child: const Text("Request Permission"),
                     ),
@@ -83,8 +86,9 @@ class _MyAppState extends State<MyApp> {
                   shrinkWrap: true,
                   itemCount: events.length,
                   itemBuilder: (_, index) => ListTile(
-                    title: Text(events[index]!.packageName!),
-                    subtitle: Text(events[index]!.capturedText ?? ""),
+                    leading: Image.memory(events[index].notificationIcon!),
+                    title: Text(events[index].title ?? "No title"),
+                    subtitle: Text(events[index].content ?? "no content"),
                   ),
                 ),
               )

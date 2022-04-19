@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
+import 'package:notification_listener_service/notification_event.dart';
 
 class NotificationListenerService {
   NotificationListenerService._();
@@ -11,14 +12,15 @@ class NotificationListenerService {
       MethodChannel('x-slayer/notifications_channel');
   static const EventChannel _eventChannel =
       EventChannel('x-slayer/notifications_event');
-  static Stream<dynamic> _stream = const Stream.empty();
+  static Stream<ServiceNotificationEvent> _stream = const Stream.empty();
 
   /// stream the incoming Accessibility events
-  static Stream<dynamic> get notificationsStream {
+  static Stream<ServiceNotificationEvent> get notificationsStream {
     if (Platform.isAndroid) {
-      _stream = _eventChannel.receiveBroadcastStream().map(
-            (event) => event,
-          );
+      _stream =
+          _eventChannel.receiveBroadcastStream().map<ServiceNotificationEvent>(
+                (event) => ServiceNotificationEvent.fromMap(event),
+              );
       return _stream;
     }
     throw Exception("Notifications API exclusively available on Android!");

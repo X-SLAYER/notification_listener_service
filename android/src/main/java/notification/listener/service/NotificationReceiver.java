@@ -25,10 +25,10 @@ public class NotificationReceiver extends BroadcastReceiver {
         String packageName = intent.getStringExtra(NotificationConstants.PACKAGE_NAME);
         String title = intent.getStringExtra(NotificationConstants.NOTIFICATION_TITLE);
         String content = intent.getStringExtra(NotificationConstants.NOTIFICATION_CONTENT);
-        String notificationIcon = intent.getStringExtra(NotificationConstants.NOTIFICATIONS_ICON);
-        String notificationExtrasPicture = intent.getStringExtra(NotificationConstants.EXTRAS_PICTURE);
-        String hasExtrasPicture = intent.getStringExtra(NotificationConstants.HAS_EXTRAS_PICTURE);
-        boolean hasRemoved = intent.getBooleanExtra(NotificationConstants.IS_REMOVED , false);
+        byte[] notificationIcon = intent.getByteArrayExtra(NotificationConstants.NOTIFICATIONS_ICON);
+        byte[] notificationExtrasPicture = intent.getByteArrayExtra(NotificationConstants.EXTRAS_PICTURE);
+        boolean hasExtrasPicture = intent.getBooleanExtra(NotificationConstants.HAS_EXTRAS_PICTURE, false);
+        boolean hasRemoved = intent.getBooleanExtra(NotificationConstants.IS_REMOVED, false);
 
         HashMap<String, Object> data = new HashMap<>();
         data.put("packageName", packageName);
