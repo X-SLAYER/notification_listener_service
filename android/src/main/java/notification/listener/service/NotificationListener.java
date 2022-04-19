@@ -41,7 +41,7 @@ public class NotificationListener extends NotificationListenerService {
         String packageName = notification.getPackageName();
         Bundle extras = notification.getNotification().extras;
         byte[] drawable = getSmallIcon(packageName);
-        
+
 
         Intent intent = new Intent(NotificationConstants.INTENT);
         intent.putExtra(NotificationConstants.PACKAGE_NAME, packageName);
