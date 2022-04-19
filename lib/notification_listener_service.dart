@@ -1,17 +1,47 @@
-// You have generated a new plugin project without
-// specifying the `--platforms` flag. A plugin project supports no platforms is generated.
-// To add platforms, run `flutter create -t plugin --platforms <platforms> .` under the same
-// directory. You can also find a detailed instruction on how to add platforms in the `pubspec.yaml` at https://flutter.dev/docs/development/packages-and-plugins/developing-packages#plugin-platforms.
-
 import 'dart:async';
+import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 
 class NotificationListenerService {
-  static const MethodChannel _channel = MethodChannel('notification_listener_service');
+  NotificationListenerService._();
 
-  static Future<String?> get platformVersion async {
-    final String? version = await _channel.invokeMethod('getPlatformVersion');
-    return version;
+  static const MethodChannel _methodeChannel =
+      MethodChannel('x-slayer/notifications_channel');
+  static const EventChannel _eventChannel =
+      EventChannel('x-slayer/notifications_event');
+  static Stream<dynamic> _stream = const Stream.empty();
+
+  /// stream the incoming Accessibility events
+  static Stream<dynamic> get notificationsStream {
+    if (Platform.isAndroid) {
+      _stream = _eventChannel.receiveBroadcastStream().map(
+            (event) => event,
+          );
+      return _stream;
+    }
+    throw Exception("Notifications API exclusively available on Android!");
+  }
+
+  /// request notification permission
+  /// it will open the notification settings page and return `true` once the permission granted.
+  static Future<bool> requestPermission() async {
+    try {
+      return await _methodeChannel.invokeMethod('requestPermission');
+    } on PlatformException catch (error) {
+      log("$error");
+      return Future.value(false);
+    }
+  }
+
+  /// check if notification permession is enebaled
+  static Future<bool> isPermissionGranted() async {
+    try {
+      return await _methodeChannel.invokeMethod('isPermissionGranted');
+    } on PlatformException catch (error) {
+      log("$error");
+      return false;
+    }
   }
 }

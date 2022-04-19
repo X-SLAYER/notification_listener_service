@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:developer';
 
-import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
 import 'package:notification_listener_service/notification_listener_service.dart';
 
 void main() {
@@ -16,34 +16,12 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
+  StreamSubscription<dynamic>? _subscription;
+  List<dynamic> events = [];
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
-    try {
-      platformVersion =
-          await NotificationListenerService.platformVersion ?? 'Unknown platform version';
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
   }
 
   @override
@@ -54,7 +32,64 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+          child: Column(
+            children: [
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () async {
+                        await NotificationListenerService.requestPermission();
+                      },
+                      child: const Text("Request Permission"),
+                    ),
+                    const SizedBox(height: 20.0),
+                    TextButton(
+                      onPressed: () async {
+                        final bool res = await NotificationListenerService
+                            .isPermissionGranted();
+                        log("Is enabled: $res");
+                      },
+                      child: const Text("Check Permission"),
+                    ),
+                    const SizedBox(height: 20.0),
+                    TextButton(
+                      onPressed: () {
+                        _subscription = NotificationListenerService
+                            .notificationsStream
+                            .listen((event) {
+                          log("$event");
+                          setState(() {
+                            events.add(event);
+                          });
+                        });
+                      },
+                      child: const Text("Start Stream"),
+                    ),
+                    const SizedBox(height: 20.0),
+                    TextButton(
+                      onPressed: () {
+                        _subscription?.cancel();
+                      },
+                      child: const Text("Stop Stream"),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: events.length,
+                  itemBuilder: (_, index) => ListTile(
+                    title: Text(events[index]!.packageName!),
+                    subtitle: Text(events[index]!.capturedText ?? ""),
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
