@@ -86,9 +86,30 @@ class _MyAppState extends State<MyApp> {
                   shrinkWrap: true,
                   itemCount: events.length,
                   itemBuilder: (_, index) => ListTile(
-                    leading: Image.memory(events[index].notificationIcon!),
+                    trailing: events[index].hasRemoved!
+                        ? const Text(
+                            "Removed",
+                            style: TextStyle(color: Colors.red),
+                          )
+                        : const SizedBox.shrink(),
+                    leading: Image.memory(
+                      events[index].notificationIcon!,
+                      width: 35.0,
+                      height: 35.0,
+                    ),
                     title: Text(events[index].title ?? "No title"),
-                    subtitle: Text(events[index].content ?? "no content"),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(events[index].content ?? "no content"),
+                        events[index].hasExtrasPicture!
+                            ? Image.memory(
+                                events[index].extrasPicture!,
+                              )
+                            : const SizedBox.shrink(),
+                      ],
+                    ),
+                    isThreeLine: true,
                   ),
                 ),
               )
