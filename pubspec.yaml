@@ -1,6 +1,6 @@
 name: notification_listener_service
 description: a service that receives calls from the system when new notifications are posted or removed.
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/X-SLAYER/notification_listener_service
 
 environment:

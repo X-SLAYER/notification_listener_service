@@ -1,6 +1,5 @@
 package notification.listener.service;
 
-import static notification.listener.service.NotificationUtils.encodeToBase64;
 import static notification.listener.service.NotificationUtils.getBitmapFromDrawable;
 
 import android.annotation.SuppressLint;
@@ -13,7 +12,6 @@ import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
-import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
@@ -42,7 +40,6 @@ public class NotificationListener extends NotificationListenerService {
         Bundle extras = notification.getNotification().extras;
         byte[] drawable = getSmallIcon(packageName);
 
-
         Intent intent = new Intent(NotificationConstants.INTENT);
         intent.putExtra(NotificationConstants.PACKAGE_NAME, packageName);
 
@@ -55,15 +52,13 @@ public class NotificationListener extends NotificationListenerService {
             intent.putExtra(NotificationConstants.NOTIFICATION_TITLE, title == null ? null : title.toString());
             intent.putExtra(NotificationConstants.NOTIFICATION_CONTENT, text == null ? null : text.toString());
             intent.putExtra(NotificationConstants.IS_REMOVED, isRemoved);
+            intent.putExtra(NotificationConstants.HAS_EXTRAS_PICTURE, extras.containsKey(Notification.EXTRA_PICTURE));
 
             if (extras.containsKey(Notification.EXTRA_PICTURE)) {
                 Bitmap bmp = (Bitmap) extras.get(Notification.EXTRA_PICTURE);
-                intent.putExtra(NotificationConstants.HAS_EXTRAS_PICTURE, true);
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
                 intent.putExtra(NotificationConstants.EXTRAS_PICTURE, stream.toByteArray());
-            } else {
-                intent.putExtra(NotificationConstants.HAS_EXTRAS_PICTURE, false);
             }
         }
         sendBroadcast(intent);

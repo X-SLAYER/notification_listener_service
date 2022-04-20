@@ -1,6 +1,6 @@
 # notification_listener_service
 
-a plugin for interacting with Notification Service in Android.
+A flutter plugin for interacting with Notification Service in Android.
 
 NotificationListenerService is a service that receives calls from the system when new notifications are posted or removed,
 
@@ -32,14 +32,14 @@ Inside AndroidManifest add this to bind notification service with your applicati
 ### USAGE
 
 ```dart
- /// check if accessibility permession is enebaled
+ /// check if notification permession is enebaled
  final bool status = await NotificationListenerService.isPermissionGranted();
 
- /// request accessibility permission
+ /// request notification permission
  /// it will open the accessibility settings page and return `true` once the permission granted.
  final bool status = await NotificationListenerService.requestPermission();
 
- /// stream the incoming Accessibility events
+ /// stream the incoming notification events
   NotificationListenerService.notificationsStream.listen((event) {
     log("Current notification: $event");
   });
@@ -56,11 +56,6 @@ The `ServiceNotificationEvent` provides:
 
   /// notification extras image
   /// To display an image simply use the [Image.memory] widget.
-  /// Example:
-  ///
-  /// ```
-  /// Image.memory(notif.extrasPicture)
-  /// ```
   Uint8List? extrasPicture;
 
   /// notification package name
@@ -71,15 +66,9 @@ The `ServiceNotificationEvent` provides:
 
   /// the notification app icon
   /// To display an image simply use the [Image.memory] widget.
-  /// Example:
-  ///
-  /// ```
-  /// Image.memory(notif.notificationIcon)
-  /// ```
   Uint8List? notificationIcon;
 
   /// the content of the notification
   String? content;
-```
 
-for each event.
+```
