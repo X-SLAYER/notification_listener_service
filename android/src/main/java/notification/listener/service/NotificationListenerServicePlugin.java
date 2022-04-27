@@ -56,7 +56,6 @@ public class NotificationListenerServicePlugin implements FlutterPlugin, Activit
             Intent intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
             mActivity.startActivityForResult(intent, REQUEST_CODE_FOR_NOTIFICATIONS);
         } else if (call.method.equals("sendReply")) {
-            Log.d("REPLY", "onMethodCall: " + call.arguments());
             final String message = call.argument("message");
             final int notificationId = call.argument("notificationId");
 

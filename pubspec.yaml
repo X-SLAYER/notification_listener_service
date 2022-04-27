@@ -1,6 +1,6 @@
 name: notification_listener_service
-description: a service that receives calls from the system when new notifications are posted or removed.
-version: 0.0.2
+description: Flutter Plugin to listen to all incoming notifications (posted or removed) with the possibility to reply to them
+version: 0.0.3
 homepage: https://github.com/X-SLAYER/notification_listener_service
 
 environment:
