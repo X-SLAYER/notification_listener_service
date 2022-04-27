@@ -86,6 +86,14 @@ class _MyAppState extends State<MyApp> {
                   shrinkWrap: true,
                   itemCount: events.length,
                   itemBuilder: (_, index) => ListTile(
+                    onTap: () async {
+                      try {
+                        await events[index]
+                            .sendReply("This is an auto response");
+                      } catch (e) {
+                        log(e.toString());
+                      }
+                    },
                     trailing: events[index].hasRemoved!
                         ? const Text(
                             "Removed",

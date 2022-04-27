@@ -1,6 +1,7 @@
 package notification.listener.service;
 
 import static notification.listener.service.NotificationUtils.getBitmapFromDrawable;
+import static notification.listener.service.models.ActionCache.cachedNotifications;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
@@ -16,6 +17,8 @@ import android.service.notification.StatusBarNotification;
 import androidx.annotation.RequiresApi;
 
 import java.io.ByteArrayOutputStream;
+
+import notification.listener.service.models.Action;
 
 
 @SuppressLint("OverrideAbstract")
@@ -40,8 +43,17 @@ public class NotificationListener extends NotificationListenerService {
         Bundle extras = notification.getNotification().extras;
         byte[] drawable = getSmallIcon(packageName);
 
+        Action action = NotificationUtils.getQuickReplyAction(notification.getNotification(), packageName);
+
+
         Intent intent = new Intent(NotificationConstants.INTENT);
         intent.putExtra(NotificationConstants.PACKAGE_NAME, packageName);
+        intent.putExtra(NotificationConstants.ID, notification.getId());
+        intent.putExtra(NotificationConstants.CAN_REPLY, action != null);
+
+        if (NotificationUtils.getQuickReplyAction(notification.getNotification(), packageName) != null) {
+            cachedNotifications.put(notification.getId(), action);
+        }
 
         intent.putExtra(NotificationConstants.NOTIFICATIONS_ICON, drawable);
 

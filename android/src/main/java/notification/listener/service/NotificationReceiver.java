@@ -1,5 +1,7 @@
 package notification.listener.service;
 
+import static notification.listener.service.NotificationConstants.*;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -22,15 +24,19 @@ public class NotificationReceiver extends BroadcastReceiver {
     @RequiresApi(api = VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     public void onReceive(Context context, Intent intent) {
-        String packageName = intent.getStringExtra(NotificationConstants.PACKAGE_NAME);
-        String title = intent.getStringExtra(NotificationConstants.NOTIFICATION_TITLE);
-        String content = intent.getStringExtra(NotificationConstants.NOTIFICATION_CONTENT);
-        byte[] notificationIcon = intent.getByteArrayExtra(NotificationConstants.NOTIFICATIONS_ICON);
-        byte[] notificationExtrasPicture = intent.getByteArrayExtra(NotificationConstants.EXTRAS_PICTURE);
-        boolean hasExtrasPicture = intent.getBooleanExtra(NotificationConstants.HAS_EXTRAS_PICTURE, false);
-        boolean hasRemoved = intent.getBooleanExtra(NotificationConstants.IS_REMOVED, false);
+        String packageName = intent.getStringExtra(PACKAGE_NAME);
+        String title = intent.getStringExtra(NOTIFICATION_TITLE);
+        String content = intent.getStringExtra(NOTIFICATION_CONTENT);
+        byte[] notificationIcon = intent.getByteArrayExtra(NOTIFICATIONS_ICON);
+        byte[] notificationExtrasPicture = intent.getByteArrayExtra(EXTRAS_PICTURE);
+        boolean hasExtrasPicture = intent.getBooleanExtra(HAS_EXTRAS_PICTURE, false);
+        boolean hasRemoved = intent.getBooleanExtra(IS_REMOVED, false);
+        boolean canReply = intent.getBooleanExtra(CAN_REPLY, false);
+        int id = intent.getIntExtra(ID, -1);
+
 
         HashMap<String, Object> data = new HashMap<>();
+        data.put("id", id);
         data.put("packageName", packageName);
         data.put("title", title);
         data.put("content", content);
@@ -38,6 +44,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         data.put("notificationExtrasPicture", notificationExtrasPicture);
         data.put("hasExtrasPicture", hasExtrasPicture);
         data.put("hasRemoved", hasRemoved);
+        data.put("canReply", canReply);
 
         eventSink.success(data);
     }

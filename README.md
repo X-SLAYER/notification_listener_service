@@ -48,6 +48,12 @@ Inside AndroidManifest add this to bind notification service with your applicati
 The `ServiceNotificationEvent` provides:
 
 ```dart
+  /// the notification id
+  int? id;
+
+  /// check if we can reply the Notification
+  bool? canReply;
+
   /// if the notification has an extras image
   bool? hasExtrasPicture;
 
@@ -70,5 +76,19 @@ The `ServiceNotificationEvent` provides:
 
   /// the content of the notification
   String? content;
+
+  /// send a direct message reply to the incoming notification
+  Future<bool> sendReply(String message)
+
+```
+
+To reply to a notification provides:
+
+```dart
+  try {
+    await event.sendReply("This is an auto response");
+  } catch (e) {
+    log(e.toString());
+  }
 
 ```

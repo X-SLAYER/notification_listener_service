@@ -3,6 +3,7 @@ package notification.listener.service;
 import static notification.listener.service.NotificationUtils.isPermissionGranted;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -20,6 +21,8 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
+import notification.listener.service.models.Action;
+import notification.listener.service.models.ActionCache;
 
 
 public class NotificationListenerServicePlugin implements FlutterPlugin, ActivityAware, MethodCallHandler, PluginRegistry.ActivityResultListener, EventChannel.StreamHandler {
@@ -52,6 +55,22 @@ public class NotificationListenerServicePlugin implements FlutterPlugin, Activit
         } else if (call.method.equals("requestPermission")) {
             Intent intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
             mActivity.startActivityForResult(intent, REQUEST_CODE_FOR_NOTIFICATIONS);
+        } else if (call.method.equals("sendReply")) {
+            Log.d("REPLY", "onMethodCall: " + call.arguments());
+            final String message = call.argument("message");
+            final int notificationId = call.argument("notificationId");
+
+            final Action action = ActionCache.cachedNotifications.get(notificationId);
+            if (action == null) {
+                result.error("Notification", "Can't find this cached notification", null);
+            }
+            try {
+                action.sendReply(context, message);
+                result.success(true);
+            } catch (PendingIntent.CanceledException e) {
+                result.success(false);
+                e.printStackTrace();
+            }
         } else {
             result.notImplemented();
         }
