@@ -92,3 +92,16 @@ To reply to a notification provides:
   }
 
 ```
+## Exemple of the app on foreground
+
+Find the exemple app [Here](https://github.com/X-SLAYER/foreground_plugins_test)
+
+## Screenshots
+
+<img src="https://user-images.githubusercontent.com/22800380/165560254-fc72ed1f-a31e-4498-b6de-18cea539ca11.png" width="300">
+
+
+
+
+
+
