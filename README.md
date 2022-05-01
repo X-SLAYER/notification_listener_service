@@ -36,7 +36,7 @@ Inside AndroidManifest add this to bind notification service with your applicati
  final bool status = await NotificationListenerService.isPermissionGranted();
 
  /// request notification permission
- /// it will open the accessibility settings page and return `true` once the permission granted.
+ /// it will open the notifications settings page and return `true` once the permission granted.
  final bool status = await NotificationListenerService.requestPermission();
 
  /// stream the incoming notification events

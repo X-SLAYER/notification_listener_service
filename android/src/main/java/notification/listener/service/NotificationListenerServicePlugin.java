@@ -32,6 +32,7 @@ public class NotificationListenerServicePlugin implements FlutterPlugin, Activit
 
     private MethodChannel channel;
     private EventChannel eventChannel;
+    private NotificationReceiver notificationReceiver;
     private Context context;
     private Activity mActivity;
 
@@ -106,8 +107,8 @@ public class NotificationListenerServicePlugin implements FlutterPlugin, Activit
     public void onListen(Object arguments, EventChannel.EventSink events) {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(NotificationConstants.INTENT);
-        NotificationReceiver receiver = new NotificationReceiver(events);
-        context.registerReceiver(receiver, intentFilter);
+        notificationReceiver = new NotificationReceiver(events);
+        context.registerReceiver(notificationReceiver, intentFilter);
         Intent listenerIntent = new Intent(context, NotificationReceiver.class);
         context.startService(listenerIntent);
         Log.i("NotificationPlugin", "Started the notifications tracking service.");
@@ -115,7 +116,8 @@ public class NotificationListenerServicePlugin implements FlutterPlugin, Activit
 
     @Override
     public void onCancel(Object arguments) {
-        eventChannel.setStreamHandler(null);
+        context.unregisterReceiver(notificationReceiver);
+        notificationReceiver = null;
     }
 
     @Override

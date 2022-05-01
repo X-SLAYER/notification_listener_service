@@ -9,3 +9,6 @@
 
 * check if you can reply to a notification 
 * add the possibility to reply to a notification
+## 0.3.1
+
+* fix the notifications stream brodcast
