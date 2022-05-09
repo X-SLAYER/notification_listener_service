@@ -18,8 +18,10 @@ dependencies:
 Inside AndroidManifest add this to bind notification service with your application
 
 ```
-    ...
-    <service android:label="notifications" android:name="notification.listener.service.NotificationListener" android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+   .
+   .
+<service android:label="notifications" android:name="notification.listener.service.NotificationListener"
+android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" android:exported="false">
         <intent-filter>
             <action android:name="android.service.notification.NotificationListenerService" />
         </intent-filter>
