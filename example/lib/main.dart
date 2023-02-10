@@ -103,11 +103,13 @@ class _MyAppState extends State<MyApp> {
                               style: TextStyle(color: Colors.red),
                             )
                           : const SizedBox.shrink(),
-                      leading: Image.memory(
-                        events[index].notificationIcon!,
-                        width: 35.0,
-                        height: 35.0,
-                      ),
+                      leading: events[index].appIcon == null
+                          ? const SizedBox.shrink()
+                          : Image.memory(
+                              events[index].appIcon!,
+                              width: 35.0,
+                              height: 35.0,
+                            ),
                       title: Text(events[index].title ?? "No title"),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,9 +125,9 @@ class _MyAppState extends State<MyApp> {
                                   style: TextStyle(color: Colors.purple),
                                 )
                               : const SizedBox.shrink(),
-                          events[index].hasExtrasPicture!
+                          events[index].largeIcon != null
                               ? Image.memory(
-                                  events[index].extrasPicture!,
+                                  events[index].largeIcon!,
                                 )
                               : const SizedBox.shrink(),
                         ],

@@ -18,16 +18,14 @@ dependencies:
 Inside AndroidManifest add this to bind notification service with your application
 
 ```
-   .
-   .
+
 <service android:label="notifications" android:name="notification.listener.service.NotificationListener"
-android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" android:exported="false">
+android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" android:exported="true">
         <intent-filter>
             <action android:name="android.service.notification.NotificationListenerService" />
         </intent-filter>
     </service>
-    ...
-</application>
+
 
 ```
 
@@ -57,7 +55,7 @@ The `ServiceNotificationEvent` provides:
   bool? canReply;
 
   /// if the notification has an extras image
-  bool? hasExtrasPicture;
+  bool? haveExtraPicture;
 
   /// if the notification has been removed
   bool? hasRemoved;
@@ -65,6 +63,10 @@ The `ServiceNotificationEvent` provides:
   /// notification extras image
   /// To display an image simply use the [Image.memory] widget.
   Uint8List? extrasPicture;
+
+  /// notification large icon
+  /// To display an image simply use the [Image.memory] widget.
+  Uint8List? largeIcon;
 
   /// notification package name
   String? packageName;
@@ -74,7 +76,7 @@ The `ServiceNotificationEvent` provides:
 
   /// the notification app icon
   /// To display an image simply use the [Image.memory] widget.
-  Uint8List? notificationIcon;
+  Uint8List? appIcon;
 
   /// the content of the notification
   String? content;

@@ -5,14 +5,19 @@ import static notification.listener.service.models.ActionCache.cachedNotificatio
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Icon;
+import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
@@ -41,10 +46,13 @@ public class NotificationListener extends NotificationListenerService {
     private void handleNotification(StatusBarNotification notification, boolean isRemoved) {
         String packageName = notification.getPackageName();
         Bundle extras = notification.getNotification().extras;
-        byte[] drawable = getSmallIcon(packageName);
-
+        byte[] appIcon = getAppIcon(packageName);
+        byte[] largeIcon = null;
         Action action = NotificationUtils.getQuickReplyAction(notification.getNotification(), packageName);
 
+        if (Build.VERSION.SDK_INT >= VERSION_CODES.M) {
+            largeIcon = getNotificationLargeIcon(getApplicationContext(), notification.getNotification());
+        }
 
         Intent intent = new Intent(NotificationConstants.INTENT);
         intent.putExtra(NotificationConstants.PACKAGE_NAME, packageName);
@@ -55,7 +63,8 @@ public class NotificationListener extends NotificationListenerService {
             cachedNotifications.put(notification.getId(), action);
         }
 
-        intent.putExtra(NotificationConstants.NOTIFICATIONS_ICON, drawable);
+        intent.putExtra(NotificationConstants.NOTIFICATIONS_ICON, appIcon);
+        intent.putExtra(NotificationConstants.NOTIFICATIONS_LARGE_ICON, largeIcon);
 
         if (extras != null) {
             CharSequence title = extras.getCharSequence(Notification.EXTRA_TITLE);
@@ -64,7 +73,7 @@ public class NotificationListener extends NotificationListenerService {
             intent.putExtra(NotificationConstants.NOTIFICATION_TITLE, title == null ? null : title.toString());
             intent.putExtra(NotificationConstants.NOTIFICATION_CONTENT, text == null ? null : text.toString());
             intent.putExtra(NotificationConstants.IS_REMOVED, isRemoved);
-            intent.putExtra(NotificationConstants.HAS_EXTRAS_PICTURE, extras.containsKey(Notification.EXTRA_PICTURE));
+            intent.putExtra(NotificationConstants.HAVE_EXTRA_PICTURE, extras.containsKey(Notification.EXTRA_PICTURE));
 
             if (extras.containsKey(Notification.EXTRA_PICTURE)) {
                 Bitmap bmp = (Bitmap) extras.get(Notification.EXTRA_PICTURE);
@@ -77,7 +86,7 @@ public class NotificationListener extends NotificationListenerService {
     }
 
 
-    public byte[] getSmallIcon(String packageName) {
+    public byte[] getAppIcon(String packageName) {
         try {
             PackageManager manager = getBaseContext().getPackageManager();
             Drawable icon = manager.getApplicationIcon(packageName);
@@ -86,6 +95,26 @@ public class NotificationListener extends NotificationListenerService {
             return stream.toByteArray();
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
+            return null;
+        }
+    }
+
+    @RequiresApi(api = VERSION_CODES.M)
+    private byte[] getNotificationLargeIcon(Context context, Notification notification) {
+        try {
+            Icon largeIcon = notification.getLargeIcon();
+            if (largeIcon == null) {
+                return null;
+            }
+            Drawable iconDrawable = largeIcon.loadDrawable(context);
+            Bitmap iconBitmap = ((BitmapDrawable) iconDrawable).getBitmap();
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            iconBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+
+            return outputStream.toByteArray();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d("ERROR LARGE ICON", "getNotificationLargeIcon: " + e.getMessage());
             return null;
         }
     }

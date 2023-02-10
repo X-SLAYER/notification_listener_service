@@ -29,7 +29,8 @@ public class NotificationReceiver extends BroadcastReceiver {
         String content = intent.getStringExtra(NOTIFICATION_CONTENT);
         byte[] notificationIcon = intent.getByteArrayExtra(NOTIFICATIONS_ICON);
         byte[] notificationExtrasPicture = intent.getByteArrayExtra(EXTRAS_PICTURE);
-        boolean hasExtrasPicture = intent.getBooleanExtra(HAS_EXTRAS_PICTURE, false);
+        byte[] largeIcon = intent.getByteArrayExtra(NOTIFICATIONS_LARGE_ICON);
+        boolean haveExtraPicture = intent.getBooleanExtra(HAVE_EXTRA_PICTURE, false);
         boolean hasRemoved = intent.getBooleanExtra(IS_REMOVED, false);
         boolean canReply = intent.getBooleanExtra(CAN_REPLY, false);
         int id = intent.getIntExtra(ID, -1);
@@ -42,7 +43,8 @@ public class NotificationReceiver extends BroadcastReceiver {
         data.put("content", content);
         data.put("notificationIcon", notificationIcon);
         data.put("notificationExtrasPicture", notificationExtrasPicture);
-        data.put("hasExtrasPicture", hasExtrasPicture);
+        data.put("haveExtraPicture", haveExtraPicture);
+        data.put("largeIcon", largeIcon);
         data.put("hasRemoved", hasRemoved);
         data.put("canReply", canReply);
 

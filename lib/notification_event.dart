@@ -10,7 +10,7 @@ class ServiceNotificationEvent {
   bool? canReply;
 
   /// if the notification has an extras image
-  bool? hasExtrasPicture;
+  bool? haveExtraPicture;
 
   /// if the notification has been removed
   bool? hasRemoved;
@@ -35,9 +35,18 @@ class ServiceNotificationEvent {
   /// Example:
   ///
   /// ```
-  /// Image.memory(notif.notificationIcon)
+  /// Image.memory(notif.appIcon)
   /// ```
-  Uint8List? notificationIcon;
+  Uint8List? appIcon;
+
+  /// the notification large icon (ex: album covers)
+  /// To display an image simply use the [Image.memory] widget.
+  /// Example:
+  ///
+  /// ```
+  /// Image.memory(notif.largeIcon)
+  /// ```
+  Uint8List? largeIcon;
 
   /// the content of the notification
   String? content;
@@ -45,24 +54,26 @@ class ServiceNotificationEvent {
   ServiceNotificationEvent({
     this.id,
     this.canReply,
-    this.hasExtrasPicture,
+    this.haveExtraPicture,
     this.hasRemoved,
     this.extrasPicture,
     this.packageName,
     this.title,
-    this.notificationIcon,
+    this.appIcon,
+    this.largeIcon,
     this.content,
   });
 
   ServiceNotificationEvent.fromMap(Map<dynamic, dynamic> map) {
     id = map['id'];
     canReply = map['canReply'];
-    hasExtrasPicture = map['hasExtrasPicture'];
+    haveExtraPicture = map['haveExtraPicture'];
     hasRemoved = map['hasRemoved'];
     extrasPicture = map['notificationExtrasPicture'];
     packageName = map['packageName'];
     title = map['title'];
-    notificationIcon = map['notificationIcon'];
+    appIcon = map['appIcon'];
+    largeIcon = map['largeIcon'];
     content = map['content'];
   }
 
@@ -89,7 +100,7 @@ class ServiceNotificationEvent {
       title: $title
       content: $content
       hasRemoved: $hasRemoved
-      hasExtrasPicture: $hasExtrasPicture
+      haveExtraPicture: $haveExtraPicture
       ''';
   }
 }
