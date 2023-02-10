@@ -15,6 +15,6 @@
 
 - fix the notifications stream brodcast
 
-## 0.3.1
+## 0.3.2
 
 - Added support for large icon
