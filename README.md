@@ -96,7 +96,7 @@ To reply to a notification provides:
   }
 
 ```
-## Exemple of the app on foreground
+## Example of the app on foreground
 
 Find the exemple app [Here](https://github.com/X-SLAYER/foreground_plugins_test)
 
