@@ -2,15 +2,18 @@ package notification.listener.service;
 
 import static notification.listener.service.NotificationUtils.isPermissionGranted;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
@@ -23,6 +26,8 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
 import notification.listener.service.models.Action;
 import notification.listener.service.models.ActionCache;
+import android.annotation.SuppressLint;
+import android.os.Build;
 
 
 public class NotificationListenerServicePlugin implements FlutterPlugin, ActivityAware, MethodCallHandler, PluginRegistry.ActivityResultListener, EventChannel.StreamHandler {
@@ -102,13 +107,19 @@ public class NotificationListenerServicePlugin implements FlutterPlugin, Activit
     public void onDetachedFromActivity() {
         this.mActivity = null;
     }
-
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @SuppressLint("WrongConstant")
     @Override
     public void onListen(Object arguments, EventChannel.EventSink events) {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(NotificationConstants.INTENT);
         notificationReceiver = new NotificationReceiver(events);
         context.registerReceiver(notificationReceiver, intentFilter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            context.registerReceiver(notificationReceiver, intentFilter, Context.RECEIVER_EXPORTED);
+        }else{
+            context.registerReceiver(notificationReceiver, intentFilter);
+        }
         Intent listenerIntent = new Intent(context, NotificationReceiver.class);
         context.startService(listenerIntent);
         Log.i("NotificationPlugin", "Started the notifications tracking service.");
