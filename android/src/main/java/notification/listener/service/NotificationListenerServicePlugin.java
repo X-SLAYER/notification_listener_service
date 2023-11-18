@@ -107,14 +107,12 @@ public class NotificationListenerServicePlugin implements FlutterPlugin, Activit
     public void onDetachedFromActivity() {
         this.mActivity = null;
     }
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @SuppressLint("WrongConstant")
     @Override
     public void onListen(Object arguments, EventChannel.EventSink events) {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(NotificationConstants.INTENT);
         notificationReceiver = new NotificationReceiver(events);
-        context.registerReceiver(notificationReceiver, intentFilter);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             context.registerReceiver(notificationReceiver, intentFilter, Context.RECEIVER_EXPORTED);
         }else{
