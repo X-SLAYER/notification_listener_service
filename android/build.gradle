@@ -22,6 +22,8 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
+    namespace 'notification.listener.service'
+
     compileSdkVersion 34
 
     compileOptions {
