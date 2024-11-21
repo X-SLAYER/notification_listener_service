@@ -1,24 +1,28 @@
-## 0.0.1
+## 0.3.4
 
-- Initial release
+- Add namespace for android build.gradle
 
-## 0.0.2
+## 0.3.3
 
-- usage improve
-
-## 0.0.3
-
-- check if you can reply to a notification
-- add the possibility to reply to a notification
-
-## 0.3.1
-
-- fix the notifications stream brodcast
+- Added support for Android 14
 
 ## 0.3.2
 
 - Added support for large icon
 
-## 0.3.3
+## 0.3.1
 
-- Added support for android 14
+- Fixed the notifications stream broadcast
+
+## 0.0.3
+
+- Checked if you can reply to a notification
+- Added the possibility to reply to a notification
+
+## 0.0.2
+
+- Usage improvements
+
+## 0.0.1
+
+- Initial release
