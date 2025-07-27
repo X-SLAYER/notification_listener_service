@@ -68,6 +68,7 @@ public class NotificationListener extends NotificationListenerService {
 
             if (value instanceof byte[]) {
                 byte[] byteArray = (byte[]) value;
+                if (byteArray.length > 100_000) continue;
                 intent.putExtra(key, byteArray);
             } else if (value instanceof Boolean) {
                 Boolean boolValue = (Boolean) value;
@@ -80,6 +81,7 @@ public class NotificationListener extends NotificationListenerService {
                 intent.putExtra(key, longValue);
             } else if (value instanceof String) {
                 String stringValue = (String) value;
+                if (stringValue.getBytes(StandardCharsets.UTF_8).length > 50_000) continue;
                 intent.putExtra(key, stringValue);
             }
         }
