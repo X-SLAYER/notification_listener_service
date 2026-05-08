@@ -40,12 +40,6 @@ public class NotificationListener extends NotificationListenerService {
         return instance;
     }
 
-    @Override
-    public void onListenerConnected() {
-        super.onListenerConnected();
-        instance = this;
-    }
-
     private static final String TAG = "NotificationListener";
     
     // Estado de conexión del listener - accesible desde el plugin
