@@ -1,6 +1,7 @@
 ## 0.3.5
 
 - Update notification size display
+- Add timestamp for notification
   
 ## 0.3.5
 

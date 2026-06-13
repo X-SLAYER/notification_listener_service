@@ -35,6 +35,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         boolean canReply = intent.getBooleanExtra(CAN_REPLY, false);
         boolean isOngoing = intent.getBooleanExtra(IS_ONGOING, false);
         int id = intent.getIntExtra(ID, -1);
+        long postTime = intent.getLongExtra(NOTIFICATION_TIME, 0);
 
 
         HashMap<String, Object> data = new HashMap<>();
@@ -49,6 +50,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         data.put("hasRemoved", hasRemoved);
         data.put("canReply", canReply);
         data.put("onGoing", isOngoing);
+        data.put("postTime", postTime);
 
         eventSink.success(data);
     }

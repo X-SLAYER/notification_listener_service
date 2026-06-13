@@ -159,6 +159,7 @@ private void handleNotification(StatusBarNotification notification, boolean isRe
             cachedNotifications.put(notification.getId(), action);
         }
 
+        intent.putExtra(NotificationConstants.NOTIFICATION_TIME, notification.getPostTime());
         intent.putExtra(NotificationConstants.NOTIFICATIONS_ICON, appIcon);
         intent.putExtra(NotificationConstants.NOTIFICATIONS_LARGE_ICON, largeIcon);
 
@@ -274,6 +275,7 @@ private void handleNotification(StatusBarNotification notification, boolean isRe
                     : null);
             boolean isOngoing = (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0;
             notifyData.put("onGoing", isOngoing);
+            notifyData.put("postTime", sbn.getPostTime());
 
             notificationList.add(notifyData);
         }

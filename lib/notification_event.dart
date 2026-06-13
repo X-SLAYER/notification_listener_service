@@ -4,16 +4,16 @@ import 'notification_listener_service.dart';
 
 class ServiceNotificationEvent {
   /// the notification id
-  int? id;
+  int id;
 
   /// check if we can reply the Notification
-  bool? canReply;
+  bool canReply;
 
   /// if the notification has an extras image
-  bool? haveExtraPicture;
+  bool haveExtraPicture;
 
   /// if the notification has been removed
-  bool? hasRemoved;
+  bool hasRemoved;
 
   /// notification extras image
   /// To display an image simply use the [Image.memory] widget.
@@ -25,10 +25,10 @@ class ServiceNotificationEvent {
   Uint8List? extrasPicture;
 
   /// notification package name
-  String? packageName;
+  String packageName;
 
   /// notification title
-  String? title;
+  String title;
 
   /// the notification app icon
   /// To display an image simply use the [Image.memory] widget.
@@ -49,42 +49,51 @@ class ServiceNotificationEvent {
   Uint8List? largeIcon;
 
   /// the content of the notification
-  String? content;
+  String content;
 
   /// if the notification is ongoing (cannot be dismissed and is in progress)
-  bool? onGoing;
+  bool onGoing;
+
+  /// the time at which the notification was posted, in milliseconds since epoch
+  int timestamp;
+
+  /// returns the post time as a [DateTime]
+  DateTime get humanTime => DateTime.fromMillisecondsSinceEpoch(timestamp);
 
   ServiceNotificationEvent({
-    this.id,
-    this.canReply,
-    this.haveExtraPicture,
-    this.hasRemoved,
-    this.extrasPicture,
-    this.packageName,
-    this.title,
-    this.appIcon,
-    this.largeIcon,
-    this.content,
-    this.onGoing,
+    required this.id,
+    required this.title,
+    required this.canReply,
+    required this.haveExtraPicture,
+    required this.hasRemoved,
+    required this.packageName,
+    required this.content,
+    required this.onGoing,
+    required this.timestamp,
+    required this.appIcon,
+    required this.extrasPicture,
+    required this.largeIcon,
   });
 
-  ServiceNotificationEvent.fromMap(Map<dynamic, dynamic> map) {
-    id = map['id'];
-    canReply = map['canReply'];
-    haveExtraPicture = map['haveExtraPicture'];
-    hasRemoved = map['hasRemoved'];
-    extrasPicture = map['notificationExtrasPicture'];
-    packageName = map['packageName'];
-    title = map['title'];
-    appIcon = map['appIcon'];
-    largeIcon = map['largeIcon'];
-    content = map['content'];
-    onGoing = map['onGoing'];
-  }
+  factory ServiceNotificationEvent.fromMap(Map<dynamic, dynamic> map) =>
+      ServiceNotificationEvent(
+        id: map['id'] ?? 0,
+        canReply: map['canReply'] ?? false,
+        haveExtraPicture: map['haveExtraPicture'],
+        hasRemoved: map['hasRemoved'] ?? false,
+        packageName: map['packageName'] ?? '',
+        title: map['title'] ?? '',
+        content: map['content'] ?? '',
+        onGoing: map['onGoing'] ?? false,
+        timestamp: map['postTime'] ?? 0,
+        extrasPicture: map['notificationExtrasPicture'],
+        largeIcon: map['largeIcon'],
+        appIcon: map['appIcon'],
+      );
 
   /// send a direct message reply to the incoming notification
   Future<bool> sendReply(String message) async {
-    if (!canReply!) throw Exception("The notification is not replyable");
+    if (!canReply) throw Exception("The notification is not replyable");
     try {
       return await methodeChannel.invokeMethod<bool>("sendReply", {
             'message': message,
@@ -107,6 +116,8 @@ class ServiceNotificationEvent {
       hasRemoved: $hasRemoved
       haveExtraPicture: $haveExtraPicture
       onGoing: $onGoing
+      timestamp: $timestamp
+      humanTime: $humanTime
       ''';
   }
 }
