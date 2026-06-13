@@ -55,6 +55,7 @@ public class NotificationListener extends NotificationListenerService {
         Log.i(TAG, "✅ Listener CONECTADO correctamente al sistema");
 
         Intent intent = new Intent(NotificationConstants.INTENT);
+        intent.setPackage(getPackageName());
         intent.putExtra("connection_event", true);
         intent.putExtra("is_connected", true);
         intent.putExtra("timestamp", lastConnectedTime);
@@ -69,6 +70,7 @@ public class NotificationListener extends NotificationListenerService {
         Log.w(TAG, "⚠️ Listener DESCONECTADO por el sistema - Intentando reconectar...");
 
         Intent intent = new Intent(NotificationConstants.INTENT);
+        intent.setPackage(getPackageName());
         intent.putExtra("connection_event", true);
         intent.putExtra("is_connected", false);
         intent.putExtra("timestamp", lastDisconnectedTime);
@@ -147,6 +149,7 @@ private void handleNotification(StatusBarNotification notification, boolean isRe
         }
 
         Intent intent = new Intent(NotificationConstants.INTENT);
+        intent.setPackage(getPackageName());
         intent.putExtra(NotificationConstants.PACKAGE_NAME, packageName);
         intent.putExtra(NotificationConstants.ID, notification.getId());
         intent.putExtra(NotificationConstants.CAN_REPLY, action != null);

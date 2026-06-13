@@ -172,7 +172,7 @@ public class NotificationListenerServicePlugin implements FlutterPlugin, Activit
         intentFilter.addAction(NotificationConstants.INTENT);
         notificationReceiver = new NotificationReceiver(events);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            context.registerReceiver(notificationReceiver, intentFilter, Context.RECEIVER_EXPORTED);
+            context.registerReceiver(notificationReceiver, intentFilter, Context.RECEIVER_NOT_EXPORTED);
         }else{
             context.registerReceiver(notificationReceiver, intentFilter);
         }
