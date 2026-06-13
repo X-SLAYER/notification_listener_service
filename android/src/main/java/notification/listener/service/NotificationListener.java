@@ -40,33 +40,20 @@ public class NotificationListener extends NotificationListenerService {
         return instance;
     }
 
+
+    private static final String TAG = "NotificationListener";
+    public static boolean isConnected = false;
+    public static long lastConnectedTime = 0;
+    public static long lastDisconnectedTime = 0;
+
     @Override
     public void onListenerConnected() {
         super.onListenerConnected();
         instance = this;
-    }
-
-    private static final String TAG = "NotificationListener";
-    
-    // Estado de conexión del listener - accesible desde el plugin
-    public static boolean isConnected = false;
-    
-    // Timestamp de última conexión para debugging
-    public static long lastConnectedTime = 0;
-    public static long lastDisconnectedTime = 0;
-
-    /**
-     * Llamado cuando el listener se conecta correctamente al sistema.
-     * Xiaomi puede llamar esto múltiples veces si reconecta el servicio.
-     */
-    @Override
-    public void onListenerConnected() {
-        super.onListenerConnected();
         isConnected = true;
         lastConnectedTime = System.currentTimeMillis();
         Log.i(TAG, "✅ Listener CONECTADO correctamente al sistema");
-        
-        // Notificar a Flutter sobre la conexión
+
         Intent intent = new Intent(NotificationConstants.INTENT);
         intent.putExtra("connection_event", true);
         intent.putExtra("is_connected", true);
@@ -74,92 +61,64 @@ public class NotificationListener extends NotificationListenerService {
         sendBroadcast(intent);
     }
 
-    /**
-     * Llamado cuando el sistema desconecta el listener.
-     * En Xiaomi esto puede pasar silenciosamente - aquí intentamos reconectar.
-     */
     @Override
     public void onListenerDisconnected() {
         super.onListenerDisconnected();
         isConnected = false;
         lastDisconnectedTime = System.currentTimeMillis();
         Log.w(TAG, "⚠️ Listener DESCONECTADO por el sistema - Intentando reconectar...");
-        
-        // Notificar a Flutter sobre la desconexión
+
         Intent intent = new Intent(NotificationConstants.INTENT);
         intent.putExtra("connection_event", true);
         intent.putExtra("is_connected", false);
         intent.putExtra("timestamp", lastDisconnectedTime);
         sendBroadcast(intent);
-        
-        // Intentar reconexión automática (API 24+)
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             try {
                 requestRebind(new ComponentName(this, NotificationListener.class));
-                Log.i(TAG, "🔄 Solicitando reconexión con requestRebind()...");
+                Log.i(TAG, "🔄Requesting reconnection with requestRebind()...");
             } catch (Exception e) {
-                Log.e(TAG, "❌ Error al solicitar reconexión: " + e.getMessage());
+                Log.e(TAG, "❌ Error requesting reconnection:" + e.getMessage());
             }
         }
     }
 
-    /**
-     * Método estático para forzar reconexión desde el Plugin.
-     * Implementa el "Toggle del Componente" recomendado para Xiaomi.
-     */
     public static void reconnectService(Context context) {
         try {
             PackageManager pm = context.getPackageManager();
             ComponentName componentName = new ComponentName(context, NotificationListener.class);
-            
-            Log.i(TAG, "🔄 Iniciando Toggle del Componente para reconectar...");
-            
-            // 1. Deshabilitar el componente
+
+            Log.i(TAG, "🔄 Initiating component to reconnect...");
+
             pm.setComponentEnabledSetting(
                 componentName,
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                 PackageManager.DONT_KILL_APP
             );
-            
-            // Pequeña pausa para asegurar que el sistema procese el cambio
+
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
-                // Ignorar
-            }
-            
-            // 2. Habilitar el componente inmediatamente
+             }
+
             pm.setComponentEnabledSetting(
                 componentName,
                 PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                 PackageManager.DONT_KILL_APP
             );
-            
-            Log.i(TAG, "✅ Toggle completado - El sistema debería reconectar el listener");
-            
+
+            Log.i(TAG, "✅Toggle completed - The system should reconnect the listener.");
+
         } catch (Exception e) {
             Log.e(TAG, "❌ Error en reconnectService: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Verifica si el listener puede obtener notificaciones activas.
-     * Este es el test real de si el "binder" está vivo o muerto.
-     */
-    public boolean isBinderAlive() {
-        try {
-            StatusBarNotification[] activeNotifications = getActiveNotifications();
-            return activeNotifications != null;
-        } catch (Exception e) {
-            Log.w(TAG, "Binder parece estar muerto: " + e.getMessage());
-            return false;
         }
     }
 
     @RequiresApi(api = VERSION_CODES.KITKAT)
     @Override
     public void onNotificationPosted(StatusBarNotification notification) {
-        // Actualizar estado de conexión - si recibimos notificaciones, estamos conectados
+        // Update connection status - if we receive notifications, we are connected
         if (!isConnected) {
             isConnected = true;
             Log.i(TAG, "📥 Notificación recibida - Actualizando estado a CONECTADO");
@@ -205,16 +164,16 @@ private void handleNotification(StatusBarNotification notification, boolean isRe
             CharSequence text = extras.getCharSequence(Notification.EXTRA_TEXT);
 
             // Limitar tamaño del texto para evitar TransactionTooLargeException
-            String safeTitle = (title == null) ? null : 
+            String safeTitle = (title == null) ? null :
                 (title.length() > 100 ? title.subSequence(0, 100) + "..." : title.toString());
-            
-            String safeText = (text == null) ? null : 
+
+            String safeText = (text == null) ? null :
                 (text.length() > 500 ? text.subSequence(0, 500) + "..." : text.toString());
-                
+
             intent.putExtra(NotificationConstants.NOTIFICATION_TITLE, safeTitle);
             intent.putExtra(NotificationConstants.NOTIFICATION_CONTENT, safeText);
             intent.putExtra(NotificationConstants.IS_REMOVED, isRemoved);
-            
+
             // Solo incluir imagen si la notificación no es demasiado grande
             boolean containsImage = extras.containsKey(Notification.EXTRA_PICTURE);
             intent.putExtra(NotificationConstants.HAVE_EXTRA_PICTURE, containsImage);
@@ -235,11 +194,11 @@ private void handleNotification(StatusBarNotification notification, boolean isRe
                             int height = Math.round(bmp.getHeight() * ratio);
                             scaledBmp = Bitmap.createScaledBitmap(bmp, width, height, true);
                         }
-                        
+
                         ByteArrayOutputStream stream = new ByteArrayOutputStream();
                         scaledBmp.compress(Bitmap.CompressFormat.JPEG, 70, stream);
                         byte[] imageData = stream.toByteArray();
-                        
+
                         // Solo incluir si no es demasiado grande
                         if (imageData.length < 200000) { // 200KB límite
                             intent.putExtra(NotificationConstants.EXTRAS_PICTURE, imageData);
@@ -278,10 +237,12 @@ private void handleNotification(StatusBarNotification notification, boolean isRe
                 return null;
             }
             Drawable iconDrawable = largeIcon.loadDrawable(context);
-            Bitmap iconBitmap = ((BitmapDrawable) iconDrawable).getBitmap();
+            if (iconDrawable == null) {
+                return null;
+            }
+            Bitmap iconBitmap = getBitmapFromDrawable(iconDrawable);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             iconBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-
             return outputStream.toByteArray();
         } catch (Exception e) {
             e.printStackTrace();
@@ -296,22 +257,22 @@ private void handleNotification(StatusBarNotification notification, boolean isRe
         StatusBarNotification[] activeNotifications = getActiveNotifications();
 
         for (StatusBarNotification sbn : activeNotifications) {
-            Map<String, Object> notifData = new HashMap<>();
+            Map<String, Object> notifyData = new HashMap<>();
             Notification notification = sbn.getNotification();
             Bundle extras = notification.extras;
 
-            notifData.put("id", sbn.getId());
-            notifData.put("packageName", sbn.getPackageName());
-            notifData.put("title", extras.getCharSequence(Notification.EXTRA_TITLE) != null
+            notifyData.put("id", sbn.getId());
+            notifyData.put("packageName", sbn.getPackageName());
+            notifyData.put("title", extras.getCharSequence(Notification.EXTRA_TITLE) != null
                     ? extras.getCharSequence(Notification.EXTRA_TITLE).toString()
                     : null);
-            notifData.put("content", extras.getCharSequence(Notification.EXTRA_TEXT) != null
+            notifyData.put("content", extras.getCharSequence(Notification.EXTRA_TEXT) != null
                     ? extras.getCharSequence(Notification.EXTRA_TEXT).toString()
                     : null);
             boolean isOngoing = (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0;
-            notifData.put("onGoing", isOngoing);
+            notifyData.put("onGoing", isOngoing);
 
-            notificationList.add(notifData);
+            notificationList.add(notifyData);
         }
         return notificationList;
     }

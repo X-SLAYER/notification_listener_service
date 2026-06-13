@@ -67,7 +67,6 @@ public class NotificationListenerServicePlugin implements FlutterPlugin, Activit
             Intent intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
             try {
                 mActivity.startActivityForResult(intent, REQUEST_CODE_FOR_NOTIFICATIONS);
-                result.success(null);
             } catch (ActivityNotFoundException e) {
                 Log.e("NotificationPlugin", "ActivityNotFoundException: " + e.getMessage());
                 result.error("ACTIVITY_NOT_FOUND", "No activity found to handle notification listener settings", null);

@@ -50,7 +50,7 @@ class NotificationListenerService {
   static Future<List<ServiceNotificationEvent>> getActiveNotifications() async {
     try {
       final List<dynamic> result =
-      await methodeChannel.invokeMethod('getActiveNotifications');
+          await methodeChannel.invokeMethod('getActiveNotifications');
       return result
           .map((item) => ServiceNotificationEvent.fromMap(item))
           .toList();
