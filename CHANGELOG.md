@@ -1,3 +1,8 @@
+## 1.0.0
+
+- Update notification size display
+- Add timestamp for notification
+  
 ## 0.3.5
 
 - Add onGoing flag for Notification

@@ -29,7 +29,8 @@ class NotificationListenerService {
   /// it will open the notification settings page and return `true` once the permission granted.
   static Future<bool> requestPermission() async {
     try {
-      return await methodeChannel.invokeMethod('requestPermission');
+      final result = await methodeChannel.invokeMethod('requestPermission');
+      return result ?? false;
     } on PlatformException catch (error) {
       log("$error");
       return Future.value(false);
@@ -50,7 +51,7 @@ class NotificationListenerService {
   static Future<List<ServiceNotificationEvent>> getActiveNotifications() async {
     try {
       final List<dynamic> result =
-      await methodeChannel.invokeMethod('getActiveNotifications');
+          await methodeChannel.invokeMethod('getActiveNotifications');
       return result
           .map((item) => ServiceNotificationEvent.fromMap(item))
           .toList();

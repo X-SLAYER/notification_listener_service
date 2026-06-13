@@ -13,4 +13,5 @@ public final class NotificationConstants {
     public static String IS_REMOVED = "is_removed";
     public static String CAN_REPLY = "can_reply_to_it";
     public static String IS_ONGOING = "is_ongoing";
+    public static String NOTIFICATION_TIME = "notification_time";
 }

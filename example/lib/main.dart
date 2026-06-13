@@ -97,7 +97,7 @@ class _MyAppState extends State<MyApp> {
                           log(e.toString());
                         }
                       },
-                      trailing: events[index].hasRemoved!
+                      trailing: events[index].hasRemoved
                           ? const Text(
                               "Removed",
                               style: TextStyle(color: Colors.red),
@@ -110,12 +110,12 @@ class _MyAppState extends State<MyApp> {
                               width: 35.0,
                               height: 35.0,
                             ),
-                      title: Text(events[index].title ?? "No title"),
+                      title: Text(events[index].title),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            events[index].content ?? "no content",
+                            events[index].content,
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 8.0),
@@ -124,7 +124,7 @@ class _MyAppState extends State<MyApp> {
                               "Ongoing notification",
                               style: TextStyle(color: Colors.orange),
                             ),
-                          events[index].canReply!
+                          events[index].canReply
                               ? const Text(
                                   "Replied with: This is an auto reply",
                                   style: TextStyle(color: Colors.purple),
