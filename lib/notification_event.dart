@@ -3,6 +3,37 @@ import 'dart:typed_data';
 import 'notification_listener_service.dart';
 
 class ServiceNotificationEvent {
+  ServiceNotificationEvent({
+    required this.id,
+    required this.title,
+    required this.canReply,
+    required this.haveExtraPicture,
+    required this.hasRemoved,
+    required this.packageName,
+    required this.content,
+    required this.onGoing,
+    required this.timestamp,
+    required this.appIcon,
+    required this.extrasPicture,
+    required this.largeIcon,
+  });
+
+  factory ServiceNotificationEvent.fromMap(Map<dynamic, dynamic> map) =>
+      ServiceNotificationEvent(
+        id: map['id'] ?? 0,
+        canReply: map['canReply'] ?? false,
+        haveExtraPicture: map['haveExtraPicture'],
+        hasRemoved: map['hasRemoved'] ?? false,
+        packageName: map['packageName'] ?? '',
+        title: map['title'] ?? '',
+        content: map['content'] ?? '',
+        onGoing: map['onGoing'] ?? false,
+        timestamp: map['postTime'] ?? 0,
+        extrasPicture: map['notificationExtrasPicture'],
+        largeIcon: map['largeIcon'],
+        appIcon: map['appIcon'],
+      );
+
   /// the notification id
   int id;
 
@@ -60,40 +91,11 @@ class ServiceNotificationEvent {
   /// returns the post time as a [DateTime]
   DateTime get humanTime => DateTime.fromMillisecondsSinceEpoch(timestamp);
 
-  ServiceNotificationEvent({
-    required this.id,
-    required this.title,
-    required this.canReply,
-    required this.haveExtraPicture,
-    required this.hasRemoved,
-    required this.packageName,
-    required this.content,
-    required this.onGoing,
-    required this.timestamp,
-    required this.appIcon,
-    required this.extrasPicture,
-    required this.largeIcon,
-  });
-
-  factory ServiceNotificationEvent.fromMap(Map<dynamic, dynamic> map) =>
-      ServiceNotificationEvent(
-        id: map['id'] ?? 0,
-        canReply: map['canReply'] ?? false,
-        haveExtraPicture: map['haveExtraPicture'],
-        hasRemoved: map['hasRemoved'] ?? false,
-        packageName: map['packageName'] ?? '',
-        title: map['title'] ?? '',
-        content: map['content'] ?? '',
-        onGoing: map['onGoing'] ?? false,
-        timestamp: map['postTime'] ?? 0,
-        extrasPicture: map['notificationExtrasPicture'],
-        largeIcon: map['largeIcon'],
-        appIcon: map['appIcon'],
-      );
-
   /// send a direct message reply to the incoming notification
   Future<bool> sendReply(String message) async {
-    if (!canReply) throw Exception("The notification is not replyable");
+    if (!canReply) {
+      throw Exception("The notification is not replyable");
+    }
     try {
       return await methodeChannel.invokeMethod<bool>("sendReply", {
             'message': message,
